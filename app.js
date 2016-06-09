@@ -1,14 +1,21 @@
-var app = require('express')();
+var express  = require('express');
+var app = express();
+
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var world = require('./js/server_world');
+
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
 
-// Add code to adjust public/static folders
-//
+app.get('/webvr', function(req, res){
+    res.sendFile(__dirname + '/Webvr.html');
+});
+
+app.use(express.static('public'));
+
 app.get('/js/client_world.js', function(req, res){
     res.sendFile(__dirname + '/js/client_world.js');
 });

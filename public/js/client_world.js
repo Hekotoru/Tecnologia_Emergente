@@ -46,11 +46,17 @@ var loadWorld = function(){
         document.addEventListener('mouseout', onMouseOut, false);
         document.addEventListener('keydown', onKeyDown, false );
         document.addEventListener('keyup', onKeyUp, false );
+        document.addEventListener('keyj', onKeyJ, false );
+        document.addEventListener('keyg', onKeyG, false );
+        document.addEventListener('keyy', onKeyY, false );
+        document.addEventListener('keyh', onKeyH, false );
         window.addEventListener( 'resize', onWindowResize, false );
 
         //Final touches-----------------------------------
         container.appendChild( renderer.domElement );
         document.body.appendChild( container );
+
+        alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
     }
 
     function animate(){
@@ -117,6 +123,23 @@ var loadWorld = function(){
         renderer.setSize( window.innerWidth, window.innerHeight );
 
     }
+    
+    function onKeyJ( event ){
+         keyState[event.keyCode || event.which] = true;
+    }
+
+    function onKeyG ( event ){
+         keyState[event.keyCode || event.which] = false;
+    }
+
+    function onKeyY ( event ){
+         keyState[event.keyCode || event.which] = true;
+    }
+
+    function onKeyH ( event ){
+         keyState[event.keyCode || event.which] = true;
+    }
+
     function calculateIntersects( event ){
 
         //Determine objects intersected by raycaster
@@ -164,11 +187,11 @@ var createPlayer = function(data){
 };
 
 var updateCameraPosition = function(){
-
+/*
     camera.position.x = player.position.x + 6 * Math.sin( player.rotation.y );
     camera.position.y = player.position.y + 6;
     camera.position.z = player.position.z + 6 * Math.cos( player.rotation.y );
-
+    */
 };
 
 var updatePlayerPosition = function(data){
@@ -196,6 +219,11 @@ var updatePlayerData = function(){
 
 };
 var checkKeyStates = function(){
+
+    var x = camera.position.x,
+        y = camera.position.y,
+        z = camera.position.z;
+
 
     if (keyState[38] || keyState[87]) {
         // up arrow or 'w' - move forward
@@ -237,6 +265,32 @@ var checkKeyStates = function(){
         updatePlayerData();
         socket.emit('updatePosition', playerData);
     }
+
+
+
+    if(keyState[74]){
+
+        camera.position.x = x * Math.cos(turnSpeed) - z * Math.sin(turnSpeed);
+        camera.position.z = z * Math.cos(turnSpeed) + x * Math.sin(turnSpeed);        
+    }
+
+    if(keyState[71]){
+
+        camera.position.x = x * Math.cos(turnSpeed) + z * Math.sin(turnSpeed);
+        camera.position.z = z * Math.cos(turnSpeed) - x * Math.sin(turnSpeed);
+    }
+
+     if(keyState[89]){
+
+        camera.position.z = z * Math.cos(turnSpeed) - z * Math.sin(turnSpeed);
+    }
+
+     if(keyState[72]){
+
+        camera.position.z = z * Math.cos(turnSpeed) + z * Math.sin(turnSpeed);
+    }
+
+    
 
 };
 
