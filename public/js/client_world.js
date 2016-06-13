@@ -8,6 +8,12 @@ var playerData;
 
 var otherPlayers = [], otherPlayersId = [];
 
+
+// Get the VRDisplay and save it for later.
+var vrDisplay = null;
+
+
+
 var loadWorld = function(){
 
     init();
@@ -22,13 +28,28 @@ var loadWorld = function(){
 
         camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
         camera.position.z = 5;
-        //camera.lookAt( new THREE.Vector3(0,0,0));
+        camera.lookAt( new THREE.Vector3(0,0,0));
 
         renderer = new THREE.WebGLRenderer( { alpha: true} );
         renderer.setSize( window.innerWidth, window.innerHeight);
 
         raycaster = new THREE.Raycaster();
-        //Add Objects To the Scene HERE-------------------
+        //Add Objects To the Scene HERE-------------------****************
+
+        // Apply VR headset positional data to camera.
+        var controls = new THREE.VRControls(camera);
+
+        // Apply VR stereo rendering to renderer.
+        var effect = new THREE.VREffect(renderer);
+        effect.setSize(window.innerWidth, window.innerHeight);
+
+        navigator.getVRDisplays().then(function(displays) {
+        if (displays.length > 0) {
+                vrDisplay = displays[0];
+            }
+        });
+        
+        ///***********************************************************      
 
         //Sphere------------------
         var sphere_geometry = new THREE.SphereGeometry(1);
@@ -50,7 +71,14 @@ var loadWorld = function(){
         document.addEventListener('keyg', onKeyG, false );
         document.addEventListener('keyy', onKeyY, false );
         document.addEventListener('keyh', onKeyH, false );
+
+        
+
         window.addEventListener( 'resize', onWindowResize, false );
+
+        // Resize the WebGL canvas when we resize and also when we change modes.
+        window.addEventListener('resize', onResize);
+        window.addEventListener('vrdisplaypresentchange', onVRDisplayPresentChange);
 
         //Final touches-----------------------------------
         container.appendChild( renderer.domElement );
@@ -58,6 +86,32 @@ var loadWorld = function(){
 
         alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
     }
+
+
+        // Button click handlers.
+    document.querySelector('button#fullscreen').addEventListener('click', function() {
+      enterFullscreen(renderer.domElement);
+    });
+    document.querySelector('button#vr').addEventListener('click', function() {
+      vrDisplay.requestPresent([{source: renderer.domElement}]);
+    });
+    document.querySelector('button#reset').addEventListener('click', function() {
+      vrDisplay.resetPose();
+    });
+
+    
+    function enterFullscreen (el) {
+      if (el.requestFullscreen) {
+        el.requestFullscreen();
+      } else if (el.mozRequestFullScreen) {
+        el.mozRequestFullScreen();
+      } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+      } else if (el.msRequestFullscreen) {
+        el.msRequestFullscreen();
+      }
+    }
+
 
     function animate(){
         requestAnimationFrame( animate );
@@ -156,6 +210,20 @@ var loadWorld = function(){
         return intersects;
     }
 
+    function onResize() {
+      console.log('Resizing to %s x %s.', window.innerWidth, window.innerHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    }
+
+    function onVRDisplayPresentChange() {
+      console.log('onVRDisplayPresentChange');
+      onResize();
+    }
+
+
+
 };
 
 var createPlayer = function(data){
@@ -187,11 +255,14 @@ var createPlayer = function(data){
 };
 
 var updateCameraPosition = function(){
-/*
+
+    /*
     camera.position.x = player.position.x + 6 * Math.sin( player.rotation.y );
     camera.position.y = player.position.y + 6;
     camera.position.z = player.position.z + 6 * Math.cos( player.rotation.y );
     */
+    
+    camera.lookAt( player.position );
 };
 
 var updatePlayerPosition = function(data){
