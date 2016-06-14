@@ -9,10 +9,6 @@ var playerData;
 var otherPlayers = [], otherPlayersId = [];
 
 
-// Get the VRDisplay and save it for later.
-var vrDisplay = null;
-
-
 
 var loadWorld = function(){
 
@@ -36,18 +32,7 @@ var loadWorld = function(){
         raycaster = new THREE.Raycaster();
         //Add Objects To the Scene HERE-------------------****************
 
-        // Apply VR headset positional data to camera.
-        var controls = new THREE.VRControls(camera);
-
-        // Apply VR stereo rendering to renderer.
-        var effect = new THREE.VREffect(renderer);
-        effect.setSize(window.innerWidth, window.innerHeight);
-
-        navigator.getVRDisplays().then(function(displays) {
-        if (displays.length > 0) {
-                vrDisplay = displays[0];
-            }
-        });
+        
         
         ///***********************************************************      
 
@@ -76,9 +61,7 @@ var loadWorld = function(){
 
         window.addEventListener( 'resize', onWindowResize, false );
 
-        // Resize the WebGL canvas when we resize and also when we change modes.
-        window.addEventListener('resize', onResize);
-        window.addEventListener('vrdisplaypresentchange', onVRDisplayPresentChange);
+        
 
         //Final touches-----------------------------------
         container.appendChild( renderer.domElement );
@@ -88,29 +71,9 @@ var loadWorld = function(){
     }
 
 
-        // Button click handlers.
-    document.querySelector('button#fullscreen').addEventListener('click', function() {
-      enterFullscreen(renderer.domElement);
-    });
-    document.querySelector('button#vr').addEventListener('click', function() {
-      vrDisplay.requestPresent([{source: renderer.domElement}]);
-    });
-    document.querySelector('button#reset').addEventListener('click', function() {
-      vrDisplay.resetPose();
-    });
+     
 
-    
-    function enterFullscreen (el) {
-      if (el.requestFullscreen) {
-        el.requestFullscreen();
-      } else if (el.mozRequestFullScreen) {
-        el.mozRequestFullScreen();
-      } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen();
-      } else if (el.msRequestFullscreen) {
-        el.msRequestFullscreen();
-      }
-    }
+
 
 
     function animate(){
@@ -210,17 +173,7 @@ var loadWorld = function(){
         return intersects;
     }
 
-    function onResize() {
-      console.log('Resizing to %s x %s.', window.innerWidth, window.innerHeight);
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-    }
-
-    function onVRDisplayPresentChange() {
-      console.log('onVRDisplayPresentChange');
-      onResize();
-    }
+    
 
 
 
