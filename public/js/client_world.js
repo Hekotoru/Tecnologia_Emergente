@@ -88,7 +88,7 @@ var loadWorld = function(){
 
             checkKeyStates();
 
-            camera.lookAt( player.position );
+            camera.lookAt(player.position);
         }
         //Render Scene---------------------------------------
         renderer.clear();
@@ -209,11 +209,11 @@ var createPlayer = function(data){
 
 var updateCameraPosition = function(){
 
-    /*
+   
     camera.position.x = player.position.x + 6 * Math.sin( player.rotation.y );
     camera.position.y = player.position.y + 6;
     camera.position.z = player.position.z + 6 * Math.cos( player.rotation.y );
-    */
+    
     
     camera.lookAt( player.position );
 };
@@ -293,25 +293,24 @@ var checkKeyStates = function(){
 
 
     if(keyState[74]){
-
-        camera.position.x = x * Math.cos(turnSpeed) - z * Math.sin(turnSpeed);
-        camera.position.z = z * Math.cos(turnSpeed) + x * Math.sin(turnSpeed);        
+        
+        camera.position.x = x * 5;  
     }
 
     if(keyState[71]){
-
-        camera.position.x = x * Math.cos(turnSpeed) + z * Math.sin(turnSpeed);
-        camera.position.z = z * Math.cos(turnSpeed) - x * Math.sin(turnSpeed);
+       
+        camera.position.x = x * -5;
+       
     }
 
      if(keyState[89]){
 
-        camera.position.z = z * Math.cos(turnSpeed) - z * Math.sin(turnSpeed);
+        camera.position.y = y * 5;
     }
 
      if(keyState[72]){
 
-        camera.position.z = z * Math.cos(turnSpeed) + z * Math.sin(turnSpeed);
+        camera.position.y = y * -5;
     }
 
     
