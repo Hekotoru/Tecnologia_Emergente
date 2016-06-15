@@ -14,6 +14,10 @@ app.get('/webvr', function(req, res){
     res.sendFile(__dirname + '/Webvr.html');
 });
 
+app.get('/sky', function(req, res){
+    res.sendFile(__dirname + '/sky.html');
+});
+
 app.use(express.static('public'));
 
 app.get('/js/client_world.js', function(req, res){
