@@ -1,12 +1,13 @@
 var container, scene, camera, renderer, raycaster, objects = [];
 var keyState = {};
 var sphere;
-
+var sky, sunSphere;
 var player, playerId, moveSpeed, turnSpeed;
 
 var playerData;
 
 var otherPlayers = [], otherPlayersId = [];
+
 
 
 
@@ -22,8 +23,9 @@ var loadWorld = function(){
 
         scene = new THREE.Scene();
 
-        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.z = 5;
+        camera = new THREE.PerspectiveCamera(105, window.innerWidth / window.innerHeight, 0.1, 2000000);
+        // camera.position.z = 5;
+        camera.position.set( 0, 100, 2000 );
         camera.lookAt( new THREE.Vector3(0,0,0));
 
         renderer = new THREE.WebGLRenderer( { alpha: true} );
@@ -32,7 +34,9 @@ var loadWorld = function(){
         raycaster = new THREE.Raycaster();
         //Add Objects To the Scene HERE-------------------****************
 
-        
+        ///Sky**************************************
+                initSky();
+          
         
         ///***********************************************************      
 
@@ -72,7 +76,103 @@ var loadWorld = function(){
 
 
      
+            function initSky() {
 
+                // Add Sky Mesh
+                sky = new THREE.Sky();
+                scene.add( sky.mesh );
+
+                // Add Sun Helper
+                sunSphere = new THREE.Mesh(
+                    new THREE.SphereBufferGeometry( 20000, 16, 8 ),
+                    new THREE.MeshBasicMaterial( { color: 0xffffff } )
+                );
+                sunSphere.position.y = - 700000;
+                sunSphere.visible = false;
+                scene.add( sunSphere );
+
+                /// GUI
+
+                var effectController  = {
+                    turbidity: 10,
+                    reileigh: 2,
+                    mieCoefficient: 0.005,
+                    mieDirectionalG: 0.8,
+                    luminance: 1,
+                    inclination: 0.49, // elevation / inclination
+                    azimuth: 0.25, // Facing front,
+                    sun: ! true
+                };
+
+                $('document').ready(function(){
+
+                            GetTime(52.3555, -1.1743);
+                        });
+
+
+                        function GetTime(latitude, longitude)
+                        {
+                            $.ajax({
+                             url: 'http://api.geonames.org/timezoneJSON',
+                             data: {lat: latitude, lng: longitude, username: 'demo'},
+                             success: function(Response){
+
+                                guiChanged(Response.time);
+                                console.log('success');
+                             }
+                            });
+                        }
+
+                var distance = 400000;
+
+                function guiChanged(value) {
+                    console.log(sky);
+                    var d = new Date(value)
+                    var f = new Date();
+                    if(d < f)
+                    {
+                    var uniforms = sky.uniforms;
+                    uniforms.turbidity.value = effectController.turbidity;
+                    uniforms.reileigh.value = effectController.reileigh;
+                    uniforms.luminance.value = effectController.luminance;
+                    uniforms.mieCoefficient.value = effectController.mieCoefficient;
+                    uniforms.mieDirectionalG.value = effectController.mieDirectionalG;
+
+                    var theta = Math.PI * ( effectController.inclination - 0.5 );
+                    var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
+
+                    sunSphere.position.x = distance * Math.cos( phi );
+                    sunSphere.position.y = distance * Math.sin( phi ) * Math.sin( theta );
+                    sunSphere.position.z = distance * Math.sin( phi ) * Math.cos( theta );
+
+                    sunSphere.visible = false;
+
+                    sky.uniforms.sunPosition.value.copy( sunSphere.position );
+                    }
+                    else {
+                        var uniforms = sky.uniforms;
+                        uniforms.turbidity.value = 1;
+                        uniforms.reileigh.value = 1;
+                        uniforms.luminance.value = 1;
+                        uniforms.mieCoefficient.value = 1;
+                        uniforms.mieDirectionalG.value = effectController.mieDirectionalG;
+
+                        var theta = Math.PI * ( effectController.inclination - 0.5 );
+                        var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
+
+                        sunSphere.position.x = distance * Math.cos( phi );
+                        sunSphere.position.y = distance * Math.sin( phi ) * Math.sin( theta );
+                        sunSphere.position.z = distance * Math.sin( phi ) * Math.cos( theta );
+
+                        sunSphere.visible = false;
+
+                        sky.uniforms.sunPosition.value.copy( sunSphere.position );
+                    }
+                    renderer.render( scene, camera );
+
+                }
+
+            }
 
 
 

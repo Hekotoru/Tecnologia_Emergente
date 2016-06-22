@@ -9,10 +9,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="//threejs.org/build/three.js"></script>
     <script src="/js/client_world.js"></script>
+    <script src="/js/dat.gui.min.js"></script>
 
 
    <style>
@@ -64,8 +65,9 @@ document.addEventListener('touchmove', function(e) {
 
 <!-- three.js library -->
 <script src="/js/three.js"></script>
+<script src="/js/SkyShader.js"></script>
 
-<!-- VRControls.js applies the WebVR transformations to a three.js camera object. -->
+<!-- VRControls.js adplies the WebVR transformations to a three.js camera object. -->
 <script src="/js/VRControls.js"></script>
 
 <!-- VREffect.js handles stereo camera setup and rendering.  -->
@@ -111,10 +113,10 @@ navigator.getVRDisplays().then(function(displays) {
 // Request animation frame loop function
 var lastRender = 0;
 function animate(timestamp) {
- 
+
   lastRender = timestamp;
 
- 
+
 
   // Update VR headset position and apply to camera.
   controls.update();
