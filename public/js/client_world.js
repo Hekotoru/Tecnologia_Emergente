@@ -3,9 +3,8 @@ var keyState = {};
 var sphere;
 var sky, sunSphere;
 var player, playerId, moveSpeed, turnSpeed;
-
+var Cube1,Cube2,Cube3,Cube4,Cube5,Cube6;
 var playerData;
-
 var otherPlayers = [], otherPlayersId = [];
 
 
@@ -23,7 +22,7 @@ var loadWorld = function(){
 
         scene = new THREE.Scene();
 
-        camera = new THREE.PerspectiveCamera(105, window.innerWidth / window.innerHeight, 0.1, 2000000);
+        camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 2000000);
         // camera.position.z = 5;
         camera.position.set( 0, 100, 2000 );
         camera.lookAt( new THREE.Vector3(0,0,0));
@@ -37,14 +36,32 @@ var loadWorld = function(){
         ///Sky**************************************
                 initSky();
           
+        var floor_geometry = new THREE.PlaneGeometry( 100, 100);
+        var floor_material = new THREE.MeshBasicMaterial( { color: 0xA9A9A9 } );
+        var floor = new THREE.Mesh( floor_geometry, floor_material );
+        floor.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
+        scene.add(floor);
         
+        Cube1=CreateCubes(10,11);
+        //console.log(Cube1);
+        scene.add(Cube1);
+        Cube2=CreateCubes(-5,5);
+        Cube3=CreateCubes(10,-10);
+        Cube4=CreateCubes(2,-2);
+        Cube5= CreateCubes(8,-8);
+        Cube6= CreateCubes(3,-13);
+        scene.add(Cube2);
+        scene.add(Cube3);
+        scene.add(Cube4);
+        scene.add(Cube5);
+        scene.add(Cube6);
         ///***********************************************************      
-
         //Sphere------------------
         var sphere_geometry = new THREE.SphereGeometry(1);
         var sphere_material = new THREE.MeshNormalMaterial();
         sphere = new THREE.Mesh( sphere_geometry, sphere_material );
-
+        sphere.position.setX(1);
+        sphere.position.setY(1);
         scene.add( sphere );
         objects.push( sphere ); //if you are interested in detecting an intersection with this sphere
 
@@ -174,9 +191,27 @@ var loadWorld = function(){
 
             }
 
+    function CreateCubes(positionx,positionz){
+            var cube_Geo = new THREE.BoxGeometry(1, 1, 1);
+            var cube_Mat = new THREE.MeshBasicMaterial({color: 0x8B0000, wireframe: false});
+            var cube_Mesh = new THREE.Mesh(cube_Geo, cube_Mat);
+            cube_Mesh.position.setX(positionx);
+            cube_Mesh.position.setY(5);
+            cube_Mesh.position.setZ(positionz);
+            return cube_Mesh;
+            //scene.add(cube_Mesh);
+            }  
 
-
-    function animate(){
+    var lastRender = 0;
+    function animate(timestamp){
+        var delta = Math.min(timestamp - lastRender, 500);
+        lastRender = timestamp;
+        Cube1.rotation.y += 0.03;
+        Cube2.rotation.y += 0.03;
+        Cube3.rotation.y += 0.03;
+        Cube4.rotation.y += 0.03;
+        Cube5.rotation.y += 0.03;
+        Cube6.rotation.y += 0.03;
         requestAnimationFrame( animate );
         render();
     }
@@ -190,6 +225,8 @@ var loadWorld = function(){
 
             camera.lookAt(player.position);
         }
+
+        
         //Render Scene---------------------------------------
         renderer.clear();
         renderer.render( scene , camera );
@@ -300,7 +337,8 @@ var createPlayer = function(data){
     turnSpeed = data.turnSpeed;
 
     updateCameraPosition();
-
+    player.position.setX(1);
+    player.position.setY(1);
     objects.push( player );
     scene.add( player );
 

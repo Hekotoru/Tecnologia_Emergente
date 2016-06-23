@@ -136,6 +136,7 @@ function animate(timestamp) {
   var delta = Math.min(timestamp - lastRender, 500);
   lastRender = timestamp;
 
+  console.log(cube.rotation.y);
   // Apply rotation to cube mesh
   cube.rotation.y += delta * 0.0006;
 
