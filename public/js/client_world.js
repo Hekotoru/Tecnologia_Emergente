@@ -6,7 +6,7 @@ var player, playerId, moveSpeed, turnSpeed;
 var Cube1,Cube2,Cube3,Cube4,Cube5,Cube6;
 var playerData;
 var otherPlayers = [], otherPlayersId = [];
-
+var controls,effect;
 
 
 
@@ -87,7 +87,12 @@ var loadWorld = function(){
         //Final touches-----------------------------------
         container.appendChild( renderer.domElement );
         document.body.appendChild( container );
-
+        // Apply VR headset positional data to camera.
+        controls = new THREE.VRControls(camera);
+        //controls.target.set(camera.position.x,camera.position.y+10,camera.position.z);
+        // Apply VR stereo rendering to renderer.
+        effect = new THREE.VREffect(renderer);
+        effect.setSize(window.innerWidth, window.innerHeight);  
         alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
     }
 
@@ -226,7 +231,7 @@ var loadWorld = function(){
             camera.lookAt(player.position);
         }
 
-        
+        controls.update();
         //Render Scene---------------------------------------
         renderer.clear();
         renderer.render( scene , camera );
