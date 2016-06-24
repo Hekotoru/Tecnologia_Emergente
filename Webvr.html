@@ -81,10 +81,8 @@ var scene = new THREE.Scene();
 
 // Create a three.js camera.
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-
 // Apply VR headset positional data to camera.
 var controls = new THREE.VRControls(camera);
-
 // Apply VR stereo rendering to renderer.
 var effect = new THREE.VREffect(renderer);
 effect.setSize(window.innerWidth, window.innerHeight);
@@ -136,17 +134,19 @@ function animate(timestamp) {
   var delta = Math.min(timestamp - lastRender, 500);
   lastRender = timestamp;
 
-  console.log(cube.rotation.y);
   // Apply rotation to cube mesh
   cube.rotation.y += delta * 0.0006;
 
   // Update VR headset position and apply to camera.
-  
+        
   controls.update();
-
+  camera.position.x = 0;
+        camera.position.y = 10;
+        camera.position.z = 10;
+  console.log(camera.position.y);
   // Render the scene.
   effect.render(scene, camera);
-
+  //console.log(camera.position.y);
   // Keep looping.
   requestAnimationFrame(animate);
 }

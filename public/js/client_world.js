@@ -91,6 +91,8 @@ var loadWorld = function(){
         controls = new THREE.VRControls(camera);
         //controls.target.set(camera.position.x,camera.position.y+10,camera.position.z);
         // Apply VR stereo rendering to renderer.
+        console.log(controls);
+
         effect = new THREE.VREffect(renderer);
         effect.setSize(window.innerWidth, window.innerHeight);  
         alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
@@ -232,6 +234,9 @@ var loadWorld = function(){
         }
 
         controls.update();
+        camera.position.x =0;
+        camera.position.y =4;
+        effect.render(scene, camera);
         //Render Scene---------------------------------------
         renderer.clear();
         renderer.render( scene , camera );
@@ -354,7 +359,7 @@ var updateCameraPosition = function(){
 
    
     camera.position.x = player.position.x + 6 * Math.sin( player.rotation.y );
-    camera.position.y = player.position.y + 6;
+    camera.position.y = player.position.y + 20;
     camera.position.z = player.position.z + 6 * Math.cos( player.rotation.y );
     
     
