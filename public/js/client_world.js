@@ -268,6 +268,7 @@ var loadWorld = function(){
         }
         controls.update();
         reticle.reticle_loop();
+        checkKeyStates();
         //manager.render(scene, camera);
         effect.render(scene, camera);
         //Render Scene---------------------------------------
@@ -385,18 +386,18 @@ var createPlayer = function(data){
     objects.push( player );
     scene.add( player );
 
-    //camera.lookAt( player.position );
+    camera.lookAt( player.position );
 };
 
 var updateCameraPosition = function(){
 
    
     camera.position.x =player.position.x + 6 * Math.sin( player.rotation.y );
-    camera.position.y =player.position.y + 20;
+    camera.position.y =player.position.y + 6;
     camera.position.z =player.position.z + 6 * Math.cos( player.rotation.y );
     
     
-    //camera.lookAt( player.position );
+    camera.lookAt( player.position );
 };
 
 var updatePlayerPosition = function(data){
@@ -430,27 +431,27 @@ var checkKeyStates = function(){
         z = camera.position.z;
 
 
-    if (keyState[38] || keyState[87]) {
+    if (/*keyState[38] ||*/ keyState[87]) {
         // up arrow or 'w' - move forward
         player.position.x -= moveSpeed * Math.sin(player.rotation.y);
         player.position.z -= moveSpeed * Math.cos(player.rotation.y);
         updatePlayerData();
         socket.emit('updatePosition', playerData);
     }
-    if (keyState[40] || keyState[83]) {
+    if (/*keyState[40] ||*/ keyState[83]) {
         // down arrow or 's' - move backward
         player.position.x += moveSpeed * Math.sin(player.rotation.y);
         player.position.z += moveSpeed * Math.cos(player.rotation.y);
         updatePlayerData();
         socket.emit('updatePosition', playerData);
     }
-    if (keyState[37] || keyState[65]) {
+    if (/*keyState[37] ||*/ keyState[65]) {
         // left arrow or 'a' - rotate left
         player.rotation.y += turnSpeed;
         updatePlayerData();
         socket.emit('updatePosition', playerData);
     }
-    if (keyState[39] || keyState[68]) {
+    if (/*keyState[39] ||*/ keyState[68]) {
         // right arrow or 'd' - rotate right
         player.rotation.y -= turnSpeed;
         updatePlayerData();
@@ -475,24 +476,37 @@ var checkKeyStates = function(){
 
     if(keyState[74]){
         
-        camera.position.x = x * 5;  
+        camera.position.x = 15; 
+        camera.position.y = 10; 
+        camera.position.z = 8;  
+        camera.lookAt( player.position ); 
     }
 
     if(keyState[71]){
        
-        camera.position.x = x * -5;
+        camera.position.x = 15; 
+        camera.position.y = 10; 
+        camera.position.z = -5;  
+        camera.lookAt( player.position );
        
     }
 
      if(keyState[89]){
 
-        camera.position.y = y * 5;
+        camera.position.x = 8; 
+        camera.position.y = 8; 
+        camera.position.z = 8;  
+        camera.lookAt( player.position );
     }
 
      if(keyState[72]){
 
-        camera.position.y = y * -5;
+        camera.position.x = 5; 
+        camera.position.y = 20; 
+        camera.position.z = 10;  
+        camera.lookAt( player.position );
     }
+
 
     
 
