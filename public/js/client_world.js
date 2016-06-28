@@ -7,7 +7,7 @@ var Cube1,Cube2,Cube3,Cube4,Cube5,Cube6;
 var playerData;
 var otherPlayers = [], otherPlayersId = [];
 var controls,effect;
-
+var reticle;
 
 
 var loadWorld = function(){
@@ -24,8 +24,8 @@ var loadWorld = function(){
 
         camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 2000000);
         // camera.position.z = 5;
-        camera.position.set( 0, 100, 2000 );
-        camera.lookAt( new THREE.Vector3(0,0,0));
+        camera.position.set( 0, 4, 0);
+        camera.lookAt( new THREE.Vector3(0,4,0));
 
         renderer = new THREE.WebGLRenderer( { alpha: true} );
         renderer.setSize( window.innerWidth, window.innerHeight);
@@ -42,15 +42,15 @@ var loadWorld = function(){
         floor.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
         scene.add(floor);
         
-        Cube1=CreateCubes(10,11);
-        //console.log(Cube1);
+        Cube1=CreateCubes(0,-3,"Miami");
         scene.add(Cube1);
-        Cube2=CreateCubes(-5,5);
-        Cube3=CreateCubes(10,-10);
-        Cube4=CreateCubes(2,-2);
-        Cube5= CreateCubes(8,-8);
-        Cube6= CreateCubes(3,-13);
+        Cube2=CreateCubes(-3,-3,"Florida");
         scene.add(Cube2);
+        Cube3=CreateCubes(-5,-3,"Mexico");
+        Cube4=CreateCubes(3,-3,"Argetina");
+        Cube5= CreateCubes(5,-3,"Brazil");
+        Cube6= CreateCubes(7,-3,"Japon");
+        
         scene.add(Cube3);
         scene.add(Cube4);
         scene.add(Cube5);
@@ -91,10 +91,19 @@ var loadWorld = function(){
         controls = new THREE.VRControls(camera);
         //controls.target.set(camera.position.x,camera.position.y+10,camera.position.z);
         // Apply VR stereo rendering to renderer.
-        console.log(controls);
-
+        //console.log(controls);
+        reticle = new vreticle.Reticle(camera);
+        reticle.add_collider(Cube1);
+        reticle.add_collider(Cube2);
+        reticle.add_collider(Cube3);
+        reticle.add_collider(Cube4);
+        reticle.add_collider(Cube5);
+        reticle.add_collider(Cube6);
         effect = new THREE.VREffect(renderer);
-        effect.setSize(window.innerWidth, window.innerHeight);  
+        effect.setSize(window.innerWidth, window.innerHeight);
+        scene.add(camera);
+        // Create a VR manager helper to enter and exit VR mode.
+        //manager = new WebVRManager(renderer, effect);  
         alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
     }
 
@@ -198,27 +207,52 @@ var loadWorld = function(){
 
             }
 
-    function CreateCubes(positionx,positionz){
+            RecticleEvento(Cube1);
+            RecticleEvento(Cube2);
+            RecticleEvento(Cube3);
+            RecticleEvento(Cube4);
+            RecticleEvento(Cube5);
+            RecticleEvento(Cube6);
+
+            function RecticleEvento(Cubo)
+            {
+                Cubo.ongazelong = function(){
+                //console.log('entre');
+                    this.material = reticle.get_random_hex_material();
+                    socket.emit('LookingCube', Cubo.name);
+                }
+                Cubo.ongazeover = function(){
+                    this.material = reticle.get_random_hex_material();
+                
+                }
+                Cubo.ongazeout = function(){
+                    this.material = reticle.default_material();
+                }
+            }
+            
+
+    function CreateCubes(positionx,positionz,nombre){
             var cube_Geo = new THREE.BoxGeometry(1, 1, 1);
             var cube_Mat = new THREE.MeshBasicMaterial({color: 0x8B0000, wireframe: false});
             var cube_Mesh = new THREE.Mesh(cube_Geo, cube_Mat);
             cube_Mesh.position.setX(positionx);
-            cube_Mesh.position.setY(5);
+            cube_Mesh.position.setY(4);
             cube_Mesh.position.setZ(positionz);
+            cube_Mesh.name = nombre;
             return cube_Mesh;
             //scene.add(cube_Mesh);
             }  
 
-    var lastRender = 0;
-    function animate(timestamp){
-        var delta = Math.min(timestamp - lastRender, 500);
-        lastRender = timestamp;
+    function animate(){
         Cube1.rotation.y += 0.03;
         Cube2.rotation.y += 0.03;
         Cube3.rotation.y += 0.03;
         Cube4.rotation.y += 0.03;
         Cube5.rotation.y += 0.03;
         Cube6.rotation.y += 0.03;
+        
+        // Render the scene through the manager.
+
         requestAnimationFrame( animate );
         render();
     }
@@ -230,12 +264,11 @@ var loadWorld = function(){
 
             checkKeyStates();
 
-            camera.lookAt(player.position);
+            //camera.lookAt(player.position);
         }
-
         controls.update();
-        camera.position.x =0;
-        camera.position.y =4;
+        reticle.reticle_loop();
+        //manager.render(scene, camera);
         effect.render(scene, camera);
         //Render Scene---------------------------------------
         renderer.clear();
@@ -352,18 +385,18 @@ var createPlayer = function(data){
     objects.push( player );
     scene.add( player );
 
-    camera.lookAt( player.position );
+    //camera.lookAt( player.position );
 };
 
 var updateCameraPosition = function(){
 
    
-    camera.position.x = player.position.x + 6 * Math.sin( player.rotation.y );
-    camera.position.y = player.position.y + 20;
-    camera.position.z = player.position.z + 6 * Math.cos( player.rotation.y );
+    camera.position.x =player.position.x + 6 * Math.sin( player.rotation.y );
+    camera.position.y =player.position.y + 20;
+    camera.position.z =player.position.z + 6 * Math.cos( player.rotation.y );
     
     
-    camera.lookAt( player.position );
+    //camera.lookAt( player.position );
 };
 
 var updatePlayerPosition = function(data){

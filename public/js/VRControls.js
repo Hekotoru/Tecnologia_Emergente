@@ -78,7 +78,7 @@ THREE.VRControls = function ( object, onError ) {
 
 				} else {
 
-					object.position.set( 0, 0, 0 );
+					object.position.set( 0, 4, 0 );
 
 				}
 
@@ -99,7 +99,7 @@ THREE.VRControls = function ( object, onError ) {
 
 				} else {
 
-					object.position.set( 0, 0, 0 );
+					object.position.set( 0, 4, 0 );
 
 				}
 

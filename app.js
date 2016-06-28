@@ -51,6 +51,10 @@ io.on('connection', function(socket){
         world.removePlayer( player );
     });
 
+    socket.on('LookingCube', function(Cube){
+        console.log('Estas mirando el cubo:'+Cube);
+    });
+
 });
 
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8081;
