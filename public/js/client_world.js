@@ -54,10 +54,13 @@ var loadWorld = function(){
         //Add Objects To the Scene HERE-------------------****************
 
         ///Sky**************************************
-                initSky();
-          
-        var floor_geometry = new THREE.PlaneGeometry( 100, 100);
-        var floor_material = new THREE.MeshBasicMaterial( { color: 0xA9A9A9 } );
+        
+        initSky();
+
+        var floortextureLoader = new THREE.TextureLoader();
+        var floortexture = floortextureLoader.load( '../img/Floor.png' );  
+        var floor_geometry = new THREE.PlaneGeometry( 30, 30);
+        var floor_material = new THREE.MeshBasicMaterial( {map:floortexture} );
         var floor = new THREE.Mesh( floor_geometry, floor_material );
         floor.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
         scene.add(floor);
