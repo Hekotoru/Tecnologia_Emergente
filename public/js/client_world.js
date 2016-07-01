@@ -4,7 +4,12 @@ var sphere;
 var distance = 400000;
 var sky, sunSphere;
 var player, playerId, moveSpeed, turnSpeed;
+
 var Cube1,Cube2,Cube3,Cube4,Cube5,Cube6;
+var textureLoader;
+var materials = [];
+
+
 var playerData;
 var otherPlayers = [], otherPlayersId = [];
 var controls,effect;
@@ -21,6 +26,8 @@ var effectController  = {
                     azimuth: 0.25, // Facing front,
                     sun: ! true
                 };
+
+
 
 
 var loadWorld = function(){
@@ -55,15 +62,17 @@ var loadWorld = function(){
         floor.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
         scene.add(floor);
         
-        Cube1=CreateCubes(0,-3,"Londres");
-        scene.add(Cube1);
-        Cube2=CreateCubes(-3,-3,"Paris");
-        scene.add(Cube2);
-        Cube3=CreateCubes(-5,-3,"Tokyo");
-        Cube4=CreateCubes(3,-3,"Turquia");
-        Cube5= CreateCubes(5,-3,"NYC");
-        Cube6= CreateCubes(7,-3,"Santo Domingo");
+        Cube1=CreateCubes(0,4,-3,"Londres");
+       
+        Cube2=CreateCubes(-3,4,-3,"Paris");
+       
+        Cube3=CreateCubes(-5,4,-3,"Tokyo");
+        Cube4=CreateCubes(3,4,-3,"Turquia");
+        Cube5= CreateCubes(5,4,-3,"NYC");
+        Cube6= CreateCubes(7,4,-3,"SantoDomingo");
         
+        scene.add(Cube1);
+        scene.add(Cube2);
         scene.add(Cube3);
         scene.add(Cube4);
         scene.add(Cube5);
@@ -160,30 +169,61 @@ var loadWorld = function(){
             {
                 Cubo.ongazelong = function(){
                 //console.log('entre');
-                    this.material = reticle.get_random_hex_material();
+                   // this.material = reticle.get_random_hex_material();
                     socket.emit('LookingCube', Cubo.name);
                 }
                 Cubo.ongazeover = function(){
-                    this.material = reticle.get_random_hex_material();
+                //    this.material = reticle.get_random_hex_material();
                 
                 }
                 Cubo.ongazeout = function(){
-                    this.material = reticle.default_material();
+                //    this.material = reticle.default_material();
                 }
             }
             
 
-    function CreateCubes(positionx,positionz,nombre){
+    function CreateCubes(positionx,positiony,positionz,nombre){
+            
+
+            var countrymaterials=[];
+
+            countrymaterials=CreateTextureContry(nombre);
+
+            var faceMaterial = new THREE.MeshFaceMaterial(countrymaterials);
+
             var cube_Geo = new THREE.BoxGeometry(1, 1, 1);
-            var cube_Mat = new THREE.MeshBasicMaterial({color: 0x8B0000, wireframe: false});
-            var cube_Mesh = new THREE.Mesh(cube_Geo, cube_Mat);
+            
+            var cube_Mesh = new THREE.Mesh(cube_Geo, faceMaterial);
             cube_Mesh.position.setX(positionx);
-            cube_Mesh.position.setY(4);
+            cube_Mesh.position.setY(positiony);
             cube_Mesh.position.setZ(positionz);
             cube_Mesh.name = nombre;
             return cube_Mesh;
-            //scene.add(cube_Mesh);
             }  
+
+
+    function CreateTextureContry(name){
+
+        textureLoader = new THREE.TextureLoader();
+
+        var texture0 = textureLoader.load( '../img/'+name+'1.png' );
+        var texture1 = textureLoader.load( '../img/'+name+'2.png' );
+        var texture2 = textureLoader.load( '../img/'+name+'3.png' );
+        var texture3 = textureLoader.load( '../img/'+name+'4.png' );
+        var texture4 = textureLoader.load( '../img/'+name+'5.png' );
+        var texture5 = textureLoader.load( '../img/'+name+'6.png' );
+
+        materials = [
+            new THREE.MeshBasicMaterial( { map: texture0 } ),
+            new THREE.MeshBasicMaterial( { map: texture1 } ),
+            new THREE.MeshBasicMaterial( { map: texture2 } ),
+            new THREE.MeshBasicMaterial( { map: texture3 } ),
+            new THREE.MeshBasicMaterial( { map: texture4 } ),
+            new THREE.MeshBasicMaterial( { map: texture5 } )
+        ];
+
+        return materials;
+    }
 
     function animate(){
         Cube1.rotation.y += 0.03;
