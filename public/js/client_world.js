@@ -1,6 +1,7 @@
 var container, scene, camera, renderer, raycaster, objects = [];
 var keyState = {};
 var sphere;
+var distance = 400000;
 var sky, sunSphere;
 var player, playerId, moveSpeed, turnSpeed;
 var Cube1,Cube2,Cube3,Cube4,Cube5,Cube6;
@@ -8,6 +9,18 @@ var playerData;
 var otherPlayers = [], otherPlayersId = [];
 var controls,effect;
 var reticle;
+var uniforms;
+var Wea,p;
+var effectController  = {
+                    turbidity: 10,
+                    reileigh: 2,
+                    mieCoefficient: 0.005,
+                    mieDirectionalG: 0.8,
+                    luminance: 1,
+                    inclination: 0.49, // elevation / inclination
+                    azimuth: 0.25, // Facing front,
+                    sun: ! true
+                };
 
 
 var loadWorld = function(){
@@ -42,14 +55,14 @@ var loadWorld = function(){
         floor.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
         scene.add(floor);
         
-        Cube1=CreateCubes(0,-3,"Miami");
+        Cube1=CreateCubes(0,-3,"Londres");
         scene.add(Cube1);
-        Cube2=CreateCubes(-3,-3,"Florida");
+        Cube2=CreateCubes(-3,-3,"Paris");
         scene.add(Cube2);
-        Cube3=CreateCubes(-5,-3,"Mexico");
-        Cube4=CreateCubes(3,-3,"Argetina");
-        Cube5= CreateCubes(5,-3,"Brazil");
-        Cube6= CreateCubes(7,-3,"Japon");
+        Cube3=CreateCubes(-5,-3,"Tokyo");
+        Cube4=CreateCubes(3,-3,"Turquia");
+        Cube5= CreateCubes(5,-3,"NYC");
+        Cube6= CreateCubes(7,-3,"Santo Domingo");
         
         scene.add(Cube3);
         scene.add(Cube4);
@@ -125,86 +138,15 @@ var loadWorld = function(){
                 scene.add( sunSphere );
 
                 /// GUI
-
-                var effectController  = {
-                    turbidity: 10,
-                    reileigh: 2,
-                    mieCoefficient: 0.005,
-                    mieDirectionalG: 0.8,
-                    luminance: 1,
-                    inclination: 0.49, // elevation / inclination
-                    azimuth: 0.25, // Facing front,
-                    sun: ! true
-                };
-
                 $('document').ready(function(){
 
                             GetTime(52.3555, -1.1743);
+                            Wea = SunCalc.getTimes(new Date(), 51.5, -0.1);
+                            p = SunCalc.getPosition(Wea.sunrise, 51.5, -0.1);
+                            console.log(Wea);
+                            //console.log(p);
+                            guiChanged(p.azimuth);
                         });
-
-
-                        function GetTime(latitude, longitude)
-                        {
-                            $.ajax({
-                             url: 'http://api.geonames.org/timezoneJSON',
-                             data: {lat: latitude, lng: longitude, username: 'demo'},
-                             success: function(Response){
-
-                                guiChanged(Response.time);
-                                console.log('success');
-                             }
-                            });
-                        }
-
-                var distance = 400000;
-
-                function guiChanged(value) {
-                    console.log(sky);
-                    var d = new Date(value)
-                    var f = new Date();
-                    if(d < f)
-                    {
-                    var uniforms = sky.uniforms;
-                    uniforms.turbidity.value = effectController.turbidity;
-                    uniforms.reileigh.value = effectController.reileigh;
-                    uniforms.luminance.value = effectController.luminance;
-                    uniforms.mieCoefficient.value = effectController.mieCoefficient;
-                    uniforms.mieDirectionalG.value = effectController.mieDirectionalG;
-
-                    var theta = Math.PI * ( effectController.inclination - 0.5 );
-                    var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
-
-                    sunSphere.position.x = distance * Math.cos( phi );
-                    sunSphere.position.y = distance * Math.sin( phi ) * Math.sin( theta );
-                    sunSphere.position.z = distance * Math.sin( phi ) * Math.cos( theta );
-
-                    sunSphere.visible = false;
-
-                    sky.uniforms.sunPosition.value.copy( sunSphere.position );
-                    }
-                    else {
-                        var uniforms = sky.uniforms;
-                        uniforms.turbidity.value = 1;
-                        uniforms.reileigh.value = 1;
-                        uniforms.luminance.value = 1;
-                        uniforms.mieCoefficient.value = 1;
-                        uniforms.mieDirectionalG.value = effectController.mieDirectionalG;
-
-                        var theta = Math.PI * ( effectController.inclination - 0.5 );
-                        var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
-
-                        sunSphere.position.x = distance * Math.cos( phi );
-                        sunSphere.position.y = distance * Math.sin( phi ) * Math.sin( theta );
-                        sunSphere.position.z = distance * Math.sin( phi ) * Math.cos( theta );
-
-                        sunSphere.visible = false;
-
-                        sky.uniforms.sunPosition.value.copy( sunSphere.position );
-                    }
-                    renderer.render( scene, camera );
-
-                }
-
             }
 
             RecticleEvento(Cube1);
@@ -354,11 +296,55 @@ var loadWorld = function(){
         return intersects;
     }
 
-    
-
-
+    socket.on('LookingCube',function(Weather){
+        console.log(Weather);
+        //GetTime(Weather.Latitude,Weather.Longitud);
+        Wea = SunCalc.getTimes(new Date(), Weather.Latitude,Weather.Longitud);
+        p = SunCalc.getPosition(Wea.sunrise, Weather.Latitude,Weather.Longitud);
+        console.log(p.azimuth);
+        guiChanged(p.azimuth);
+    });
 
 };
+
+function GetTime(latitude, longitude)
+                        {
+                            $.ajax({
+                             url: 'http://api.geonames.org/timezoneJSON',
+                             data: {lat: latitude, lng: longitude, username: 'demo'},
+                             success: function(Response){
+
+                                //guiChanged(Response.time);
+                                console.log(Response.Date);
+                             }
+                            });
+                        }
+function guiChanged(value) {
+                    console.log(sky);
+                    /*
+                    var d = new Date(value)
+                    var f = new Date();*/
+
+                    uniforms = sky.uniforms;
+                    uniforms.turbidity.value = effectController.turbidity;
+                    uniforms.reileigh.value = effectController.reileigh;
+                    uniforms.luminance.value = effectController.luminance;
+                    uniforms.mieCoefficient.value = effectController.mieCoefficient;
+                    uniforms.mieDirectionalG.value = effectController.mieDirectionalG;
+
+                    var theta = Math.PI * ( effectController.inclination - 0.5 );
+                    var phi = 2 * Math.PI * ( value - 0.5 );
+
+                    sunSphere.position.x = distance * Math.cos( phi );
+                    sunSphere.position.y = distance * Math.sin( phi ) * Math.sin( theta );
+                    sunSphere.position.z = distance * Math.sin( phi ) * Math.cos( theta );
+
+                    sunSphere.visible = false;
+
+                    sky.uniforms.sunPosition.value.copy( sunSphere.position );
+                    renderer.render( scene, camera );
+
+                }
 
 var createPlayer = function(data){
 
@@ -547,3 +533,7 @@ var playerForId = function(id){
     }
     return otherPlayers[index];
 };
+
+
+
+
