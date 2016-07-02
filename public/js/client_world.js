@@ -65,14 +65,13 @@ var loadWorld = function(){
         floor.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
         scene.add(floor);
         
-        Cube1=CreateCubes(0,4,-3,"Londres");
-       
+        
+        Cube3=CreateCubes(-5,4,1,"Tokyo");
         Cube2=CreateCubes(-3,4,-3,"Paris");
-       
-        Cube3=CreateCubes(-5,4,-3,"Tokyo");
-        Cube4=CreateCubes(3,4,-3,"Turquia");
-        Cube5= CreateCubes(5,4,-3,"NYC");
-        Cube6= CreateCubes(7,4,-3,"SantoDomingo");
+        Cube1=CreateCubes(0,4,-5,"Londres");            
+        Cube4=CreateCubes(3,4,-5,"Turquia");
+        Cube5=CreateCubes(5,4,-3,"NYC");
+        Cube6=CreateCubes(7,4,1,"SantoDomingo");
         
         scene.add(Cube1);
         scene.add(Cube2);
