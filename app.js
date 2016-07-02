@@ -3,7 +3,7 @@ var app = express();
 
 var Country = [{ name:'Londres', Latitude:51.507351, Longitud:-0.127758}, { name:'Paris',Latitude:48.856614, Longitud:2.352222}, 
 {name:'Tokyo',Latitude:35.6895,Longitud:139.6917},{ name:'Turquia',Latitude:38.963745,Longitud:35.243322},
-{name:'NYC',Latitude:40.712784,Longitud:-74.005941},{name:'Santo Domingo',Latitude:18.7357,Longitud:-70.1627}];
+{name:'NYC',Latitude:40.712784,Longitud:-74.005941},{name:'SantoDomingo',Latitude:18.7357,Longitud:-70.1627}];
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var world = require('./public/js/server_world');

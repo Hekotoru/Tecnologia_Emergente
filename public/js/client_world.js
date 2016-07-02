@@ -152,10 +152,11 @@ var loadWorld = function(){
                 /// GUI
                 $('document').ready(function(){
 
-                            GetTime(52.3555, -1.1743);
+                            GetTime(52.3555, -0.1);
                             Wea = SunCalc.getTimes(new Date(), 51.5, -0.1);
                             p = SunCalc.getPosition(Wea.sunrise, 51.5, -0.1);
                             console.log(Wea);
+                            console.log(new Date());
                             //console.log(p);
                             guiChanged(p.azimuth);
                         });
@@ -183,7 +184,6 @@ var loadWorld = function(){
                 //    this.material = reticle.default_material();
                 }
             }
-            
 
     function CreateCubes(positionx,positiony,positionz,nombre){
             
@@ -345,10 +345,24 @@ var loadWorld = function(){
         Wea = SunCalc.getTimes(new Date(), Weather.Latitude,Weather.Longitud);
         p = SunCalc.getPosition(Wea.sunrise, Weather.Latitude,Weather.Longitud);
         console.log(p.azimuth);
+        GetTime(Weather.Latitude,Weather.Longitud);
         guiChanged(p.azimuth);
+
     });
 
 };
+
+    
+function SunCalculation(SunApi)
+    {
+        if(SunApi.sunrise < SunApi.time && SunApi.time < SunApi.sunset)
+        {
+            return Math.floor(Math.random() * 1) + 0.1;  
+            //console.log(SunApi.sunrise * SunApi.time);
+        }
+        return  0;  
+        
+    }
 
 function GetTime(latitude, longitude)
                         {
@@ -358,12 +372,15 @@ function GetTime(latitude, longitude)
                              success: function(Response){
 
                                 //guiChanged(Response.time);
-                                console.log(Response.Date);
+                                console.log(Response);
+                                effectController.luminance =SunCalculation(Response);
+                                ///console.log(effectController.luminance);
+                                
                              }
                             });
                         }
 function guiChanged(value) {
-                    console.log(sky);
+                    //console.log(sky);
                     /*
                     var d = new Date(value)
                     var f = new Date();*/
