@@ -8,8 +8,9 @@ var player, playerId, moveSpeed, turnSpeed;
 var Cube1,Cube2,Cube3,Cube4,Cube5,Cube6;
 var textureLoader;
 var materials = [];
-
-
+var Texto;
+var FontLoaders;
+var fontmesh;
 var playerData;
 var otherPlayers = [], otherPlayersId = [];
 var controls,effect;
@@ -168,12 +169,43 @@ var loadWorld = function(){
             RecticleEvento(Cube5);
             RecticleEvento(Cube6);
 
+            function InitFont(font,name)
+            {
+                
+                scene.remove(fontmesh);
+                Texto = new THREE.TextGeometry( name, {
+
+                    font: font,
+                    size: 2,
+                    height: 1,
+
+                });
+
+                fontmesh = new THREE.Mesh(Texto,new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 1}));
+                /*
+                fontmesh.position.z = 0;
+                fontmesh.position.y = 4;
+                fontmesh.position.x = 0;*/
+                fontmesh.position.y = 4;
+                fontmesh.position.z = 10;
+                fontmesh.position.x = 2;
+                fontmesh.rotation.y = Math.PI;
+                scene.add(fontmesh);
+
+            }
             function RecticleEvento(Cubo)
             {
                 Cubo.ongazelong = function(){
                 //console.log('entre');
                    // this.material = reticle.get_random_hex_material();
                     socket.emit('LookingCube', Cubo.name);
+                    FontLoaders = new THREE.FontLoader();
+                    FontLoaders.load('../fonts/helvetiker_regular.typeface.js', function (font) {
+                    console.log(font);
+                    InitFont(font,Cubo.name);
+                    //animate();
+                    });
+
                 }
                 Cubo.ongazeover = function(){
                 //    this.material = reticle.get_random_hex_material();
@@ -346,6 +378,7 @@ var loadWorld = function(){
         console.log(p.azimuth);
         GetTime(Weather.Latitude,Weather.Longitud);
         guiChanged(p.azimuth);
+
 
     });
 
