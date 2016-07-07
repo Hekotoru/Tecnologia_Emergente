@@ -76,12 +76,12 @@ var loadWorld = function(){
         scene.add(floor);
         
         
-        Cube3=CreateCubes(-5,4,1,"Tokyo");
+        Cube3=CreateCubes(-5,4,-1,"Tokyo");
         Cube2=CreateCubes(-3,4,-3,"Paris");
         Cube1=CreateCubes(0,4,-5,"Londres");            
         Cube4=CreateCubes(3,4,-5,"Turquia");
         Cube5=CreateCubes(5,4,-3,"NYC");
-        Cube6=CreateCubes(7,4,1,"SantoDomingo");
+        Cube6=CreateCubes(7,4,-1,"SantoDomingo");
         
         scene.add(Cube1);
         scene.add(Cube2);
@@ -140,7 +140,7 @@ var loadWorld = function(){
         Particulas("Clouds");
         // Create a VR manager helper to enter and exit VR mode.
         //manager = new WebVRManager(renderer, effect);  
-        alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
+        //alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
     }
 
 
@@ -223,7 +223,7 @@ var loadWorld = function(){
             }
 
 
-            function RequestTimeZone(font,lat,longi){
+               function RequestTimeZone(font,lat,longi){
                 scene.remove(fonttimemesh);
                 $.ajax({
                              url: 'http://api.timezonedb.com/v2/get-time-zone',
@@ -231,7 +231,7 @@ var loadWorld = function(){
                              success: function(Response){
 
                                 //guiChanged(Response.time);
-                                console.log(Response.timestamp);
+                               // console.log(Response.timestamp);
                                 var te = new Date(Response.timestamp*1000);
                                 var pru = te.getHours()+4;
                                 var minn = "0"+te.getMinutes();
@@ -241,19 +241,19 @@ var loadWorld = function(){
                                     pru-=24;
 
                                 textofinal = pru + ':' + minn.substr(-2) + ':'+ see.substr(-2);
-                                console.log(textofinal);
+                               // console.log(textofinal);
                                 //effectController.luminance =SunCalculation(Response);
                                 ///console.log(effectController.luminance);
                                 fonttime = new THREE.TextGeometry(textofinal,{
                                     font: font,
-                                    size: 2,
-                                    height: 1,
+                                    size: 0.5,
+                                    height: 0.05,
                                 });
                                 fonttimemesh = new THREE.Mesh(fonttime,new THREE.MeshBasicMaterial({color: 'lightsteelblue', opacity: 0}));
                                 fonttimemesh.position.y = 5;
-                                fonttimemesh.position.z = 20;
-                                fonttimemesh.position.x = 7;
-                                fonttimemesh.rotation.y = Math.PI;
+                                fonttimemesh.position.z = -5;
+                                fonttimemesh.position.x = 0;
+                                fonttimemesh.rotation.y = 0;
                                 scene.add(fonttimemesh);
                                 
                              }
@@ -264,28 +264,27 @@ var loadWorld = function(){
             function InitFont(font,name)
             {
                 scene.remove(fontmesh);
-                console.log(textofinal);
+               // console.log(textofinal);
                 
                 Texto = new THREE.TextGeometry( name, {
 
                     font: font,
-                    size: 2,
-                    height: 1,
+                    size: 1,
+                    height: 0.05,
 
                 });
                 
                 fontmesh = new THREE.Mesh(Texto,new THREE.MeshBasicMaterial({color: 'lightsteelblue', opacity: 0}));
-                /*
-                fontmesh.position.z = 0;
-                fontmesh.position.y = 4;
-                fontmesh.position.x = 0;*/
-                fontmesh.position.y = 1;
-                fontmesh.position.z = 20;
-                fontmesh.position.x = 7;
-                fontmesh.rotation.y = Math.PI;
+                
+                fontmesh.position.y = 6;
+                fontmesh.position.z = -5;
+                fontmesh.position.x = 0;
+                fontmesh.rotation.y = 0;
+
                 scene.add(fontmesh);
 
             }
+
             function RecticleEvento(Cubo)
             {
                 Cubo.ongazelong = function(){
