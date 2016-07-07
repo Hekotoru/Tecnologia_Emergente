@@ -179,9 +179,13 @@ var loadWorld = function(){
                                 //guiChanged(Response.time);
                                 console.log(Response.timestamp);
                                 var te = new Date(Response.timestamp*1000);
-                                var pru = te.getHours();
+                                var pru = te.getHours()+4;
                                 var minn = "0"+te.getMinutes();
                                 var see = "0"+te.getSeconds();
+
+                                if(pru>=24)
+                                    pru-=24;
+
                                 textofinal = pru + ':' + minn.substr(-2) + ':'+ see.substr(-2);
                                 console.log(textofinal);
                                 //effectController.luminance =SunCalculation(Response);
