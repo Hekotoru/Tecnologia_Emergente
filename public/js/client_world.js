@@ -10,7 +10,7 @@ var textureLoader;
 var materials = [];
 var Texto;
 var FontLoaders;
-var fontmesh;
+var fontmesh,fonttimemesh;
 var playerData;
 var otherPlayers = [], otherPlayersId = [];
 var controls,effect;
@@ -169,13 +169,11 @@ var loadWorld = function(){
             RecticleEvento(Cube5);
             RecticleEvento(Cube6);
 
-            function InitFont(font,name)
-            {
-                scene.remove(fontmesh);
-                
+            function RequestTimeZone(font,lat,longi){
+                scene.remove(fonttimemesh);
                 $.ajax({
                              url: 'http://api.timezonedb.com/v2/get-time-zone',
-                             data: {key:'EZSH2MHY2OAN',format:'json',by:'position',lat:18.7357,lng:-70.1627},
+                             data: {key:'EZSH2MHY2OAN',format:'json',by:'position',lat:lat,lng:longi},
                              success: function(Response){
 
                                 //guiChanged(Response.time);
@@ -193,15 +191,21 @@ var loadWorld = function(){
                                     size: 2,
                                     height: 1,
                                 });
-                                fontmesh = new THREE.Mesh(fonttime,new THREE.MeshBasicMaterial({color: 'lightsteelblue', opacity: 0}));
-                                fontmesh.position.y = 5;
-                                fontmesh.position.z = 20;
-                                fontmesh.position.x = 7;
-                                fontmesh.rotation.y = Math.PI;
-                                scene.add(fontmesh);
+                                fonttimemesh = new THREE.Mesh(fonttime,new THREE.MeshBasicMaterial({color: 'lightsteelblue', opacity: 0}));
+                                fonttimemesh.position.y = 5;
+                                fonttimemesh.position.z = 20;
+                                fonttimemesh.position.x = 7;
+                                fonttimemesh.rotation.y = Math.PI;
+                                scene.add(fonttimemesh);
                                 
                              }
                             });
+
+            }
+
+            function InitFont(font,name)
+            {
+                scene.remove(fontmesh);
                 console.log(textofinal);
                 
                 Texto = new THREE.TextGeometry( name, {
@@ -230,12 +234,7 @@ var loadWorld = function(){
                 //console.log('entre');
                    // this.material = reticle.get_random_hex_material();
                     socket.emit('LookingCube', Cubo.name);
-                    FontLoaders = new THREE.FontLoader();
-                    FontLoaders.load('../fonts/helvetiker_regular.typeface.js', function (font) {
-                    console.log(font);
-                    InitFont(font,Cubo.name);
                     //animate();
-                    });
 
                 }
                 Cubo.ongazeover = function(){
@@ -409,6 +408,12 @@ var loadWorld = function(){
         console.log(p.azimuth);
         GetTime(Weather.Latitude,Weather.Longitud);
         guiChanged(p.azimuth);
+        FontLoaders = new THREE.FontLoader();
+                    FontLoaders.load('../fonts/helvetiker_regular.typeface.js', function (font) {
+                    console.log(font);
+                    InitFont(font,Weather.name);
+                    RequestTimeZone(font,Weather.Latitude,Weather.Longitud);
+                });
 
 
     });
