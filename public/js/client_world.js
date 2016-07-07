@@ -31,7 +31,7 @@ var effectController  = {
 var particles;
 var totalParticles = 200;
 var maxParticleSize = 200;
-var particleRotationSpeed = 0;
+var particleRotationSpeed = 0.02;
 var particleRotationDeg = 0;
 var lastColorRange = [0, 0.3];
 var currentColorRange = [0, 0.3];
@@ -137,26 +137,7 @@ var loadWorld = function(){
         effect.setSize(window.innerWidth, window.innerHeight);
         scene.add(camera);
 
-        //scene.remove(particles);
-        /*
-                particles = new THREE.Object3D();
-
-                particleTexture = new THREE.ImageUtils.loadTexture('../img/particle.png'),
-                spriteMaterial = new THREE.SpriteMaterial({
-                map: particleTexture,
-                color: 0xffffff
-                });
-
-                for (var i = 0; i < totalParticles; i++) {
-                var sprite = new THREE.Sprite(spriteMaterial);
-                sprite.scale.set(64, 64, 1.0);
-                sprite.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.75);
-                sprite.position.setLength(maxParticleSize * Math.random());
-                sprite.material.blending = THREE.AdditiveBlending;
-                particles.add(sprite);
-                }
-                particles.position.y = 70;
-                scene.add(particles);*/
+        Particulas("Clouds");
         // Create a VR manager helper to enter and exit VR mode.
         //manager = new WebVRManager(renderer, effect);  
         alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
@@ -373,10 +354,12 @@ var loadWorld = function(){
         Cube4.rotation.y += 0.03;
         Cube5.rotation.y += 0.03;
         Cube6.rotation.y += 0.03;
-        /*
+        
         var elapsedSeconds = clock.getElapsedTime(),
         particleRotationDirection = particleRotationDeg <= 180 ? -1 : 1;
-        particles.rotation.y = elapsedSeconds * particleRotationSpeed * particleRotationDirection;
+        particles.position.x += elapsedSeconds * particleRotationSpeed * particleRotationDirection;
+        //particles.rotation.x = elapsedSeconds * particleRotationSpeed * particleRotationDirection;
+          
           // We check if the color range has changed, if so, we'll change the colours
           if (lastColorRange[0] != currentColorRange[0] && lastColorRange[1] != currentColorRange[1]) {
             for (var i = 0; i < totalParticles; i++) {
@@ -384,7 +367,7 @@ var loadWorld = function(){
             }
             lastColorRange = currentColorRange;
         // Render the scene through the manager.
-    }*/
+    }
         requestAnimationFrame( animate );
         render();
     }
