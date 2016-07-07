@@ -4,7 +4,7 @@ var sphere;
 var distance = 400000;
 var sky, sunSphere;
 var player, playerId, moveSpeed, turnSpeed;
-
+var textofinal,fonttime;
 var Cube1,Cube2,Cube3,Cube4,Cube5,Cube6;
 var textureLoader;
 var materials = [];
@@ -171,8 +171,39 @@ var loadWorld = function(){
 
             function InitFont(font,name)
             {
-                
                 scene.remove(fontmesh);
+                
+                $.ajax({
+                             url: 'http://api.timezonedb.com/v2/get-time-zone',
+                             data: {key:'EZSH2MHY2OAN',format:'json',by:'position',lat:18.7357,lng:-70.1627},
+                             success: function(Response){
+
+                                //guiChanged(Response.time);
+                                console.log(Response.timestamp);
+                                var te = new Date(Response.timestamp*1000);
+                                var pru = te.getHours();
+                                var minn = "0"+te.getMinutes();
+                                var see = "0"+te.getSeconds();
+                                textofinal = pru + ':' + minn.substr(-2) + ':'+ see.substr(-2);
+                                console.log(textofinal);
+                                //effectController.luminance =SunCalculation(Response);
+                                ///console.log(effectController.luminance);
+                                fonttime = new THREE.TextGeometry(textofinal,{
+                                    font: font,
+                                    size: 2,
+                                    height: 1,
+                                });
+                                fontmesh = new THREE.Mesh(fonttime,new THREE.MeshBasicMaterial({color: 'lightsteelblue', opacity: 0}));
+                                fontmesh.position.y = 5;
+                                fontmesh.position.z = 20;
+                                fontmesh.position.x = 7;
+                                fontmesh.rotation.y = Math.PI;
+                                scene.add(fontmesh);
+                                
+                             }
+                            });
+                console.log(textofinal);
+                
                 Texto = new THREE.TextGeometry( name, {
 
                     font: font,
@@ -180,15 +211,15 @@ var loadWorld = function(){
                     height: 1,
 
                 });
-
-                fontmesh = new THREE.Mesh(Texto,new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 1}));
+                
+                fontmesh = new THREE.Mesh(Texto,new THREE.MeshBasicMaterial({color: 'lightsteelblue', opacity: 0}));
                 /*
                 fontmesh.position.z = 0;
                 fontmesh.position.y = 4;
                 fontmesh.position.x = 0;*/
-                fontmesh.position.y = 4;
-                fontmesh.position.z = 10;
-                fontmesh.position.x = 2;
+                fontmesh.position.y = 1;
+                fontmesh.position.z = 20;
+                fontmesh.position.x = 7;
                 fontmesh.rotation.y = Math.PI;
                 scene.add(fontmesh);
 
