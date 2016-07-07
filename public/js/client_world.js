@@ -17,6 +17,7 @@ var controls,effect;
 var reticle;
 var uniforms;
 var Wea,p;
+var clock;
 var effectController  = {
                     turbidity: 10,
                     reileigh: 2,
@@ -27,9 +28,17 @@ var effectController  = {
                     azimuth: 0.25, // Facing front,
                     sun: ! true
                 };
+var particles;
+var totalParticles = 200;
+var maxParticleSize = 200;
+var particleRotationSpeed = 0;
+var particleRotationDeg = 0;
+var lastColorRange = [0, 0.3];
+var currentColorRange = [0, 0.3];
 
-
-
+var particleTexture;
+var spriteMaterial;
+var WeatherDic = [{name:"Clouds",color:0xA9A9A9},{name:"Clear",color:0xFF8C00},{name:"Rain",color:0x008B8B},{name:"Snow",color:0xFFFAFA}]
 
 var loadWorld = function(){
 
@@ -37,7 +46,7 @@ var loadWorld = function(){
     animate();
 
     function init(){
-
+        clock = new THREE.Clock();
         //Setup------------------------------------------
         container = document.getElementById('container');
 
@@ -127,13 +136,33 @@ var loadWorld = function(){
         effect = new THREE.VREffect(renderer);
         effect.setSize(window.innerWidth, window.innerHeight);
         scene.add(camera);
+
+        //scene.remove(particles);
+        /*
+                particles = new THREE.Object3D();
+
+                particleTexture = new THREE.ImageUtils.loadTexture('../img/particle.png'),
+                spriteMaterial = new THREE.SpriteMaterial({
+                map: particleTexture,
+                color: 0xffffff
+                });
+
+                for (var i = 0; i < totalParticles; i++) {
+                var sprite = new THREE.Sprite(spriteMaterial);
+                sprite.scale.set(64, 64, 1.0);
+                sprite.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.75);
+                sprite.position.setLength(maxParticleSize * Math.random());
+                sprite.material.blending = THREE.AdditiveBlending;
+                particles.add(sprite);
+                }
+                particles.position.y = 70;
+                scene.add(particles);*/
         // Create a VR manager helper to enter and exit VR mode.
         //manager = new WebVRManager(renderer, effect);  
         alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
     }
 
 
-     
             function initSky() {
 
                 // Add Sky Mesh
@@ -168,6 +197,50 @@ var loadWorld = function(){
             RecticleEvento(Cube4);
             RecticleEvento(Cube5);
             RecticleEvento(Cube6);
+
+            function Particulas(colores){
+                scene.remove(particles);
+                particles = new THREE.Object3D();
+                var valorColor;
+                //console.log(colores);
+                for(var i=0; i< WeatherDic.length ; i++){
+                    if(WeatherDic[i].name == colores)
+                    {
+                        valorColor = WeatherDic[i].color;
+                        //console.log(valorColor);
+                    }
+                }
+                particleTexture = new THREE.ImageUtils.loadTexture('../img/particle.png'),
+                spriteMaterial = new THREE.SpriteMaterial({
+                map: particleTexture,
+                color: valorColor
+                });
+
+                for (var i = 0; i < totalParticles; i++) {
+                var sprite = new THREE.Sprite(spriteMaterial);
+                sprite.scale.set(64, 64, 1.0);
+                sprite.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.75);
+                sprite.position.setLength(maxParticleSize * Math.random());
+                sprite.material.blending = THREE.AdditiveBlending;
+                particles.add(sprite);
+                }
+                particles.position.y = 70;
+                scene.add(particles);
+            }
+            
+            function RequestOpenWeather(lati,longit){
+                $.ajax({
+                             url: 'http://api.openweathermap.org/data/2.5/weather?',
+                             data: {lat:lati,lon:longit,appid:'93ef2429222f3be36dd7cdac53cd524d'},
+                             success: function(Response){
+
+                                //guiChanged(Response.time);
+                                console.log(Response.weather[0].main);
+                                Particulas(Response.weather[0].main);
+                             }
+                            });
+            }
+
 
             function RequestTimeZone(font,lat,longi){
                 scene.remove(fonttimemesh);
@@ -292,7 +365,7 @@ var loadWorld = function(){
 
         return materials;
     }
-
+    
     function animate(){
         Cube1.rotation.y += 0.03;
         Cube2.rotation.y += 0.03;
@@ -300,9 +373,18 @@ var loadWorld = function(){
         Cube4.rotation.y += 0.03;
         Cube5.rotation.y += 0.03;
         Cube6.rotation.y += 0.03;
-        
+        /*
+        var elapsedSeconds = clock.getElapsedTime(),
+        particleRotationDirection = particleRotationDeg <= 180 ? -1 : 1;
+        particles.rotation.y = elapsedSeconds * particleRotationSpeed * particleRotationDirection;
+          // We check if the color range has changed, if so, we'll change the colours
+          if (lastColorRange[0] != currentColorRange[0] && lastColorRange[1] != currentColorRange[1]) {
+            for (var i = 0; i < totalParticles; i++) {
+                particles.children[i].material.color.setHSL(currentColorRange[0], currentColorRange[1], (Math.random() * (0.7 - 0.2) + 0.2));
+            }
+            lastColorRange = currentColorRange;
         // Render the scene through the manager.
-
+    }*/
         requestAnimationFrame( animate );
         render();
     }
@@ -418,6 +500,8 @@ var loadWorld = function(){
                     InitFont(font,Weather.name);
                     RequestTimeZone(font,Weather.Latitude,Weather.Longitud);
                 });
+        RequestOpenWeather(Weather.Latitude,Weather.Longitud);
+        //Particulas();
 
 
     });
