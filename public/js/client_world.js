@@ -96,7 +96,7 @@ var loadWorld = function(){
         sphere = new THREE.Mesh( sphere_geometry, sphere_material );
         sphere.position.setX(1);
         sphere.position.setY(1);
-        scene.add( sphere );
+        //scene.add( sphere );
         objects.push( sphere ); //if you are interested in detecting an intersection with this sphere
 
         //Events------------------------------------------
@@ -356,7 +356,7 @@ var loadWorld = function(){
         
         var elapsedSeconds = clock.getElapsedTime(),
         particleRotationDirection = particleRotationDeg <= 180 ? -1 : 1;
-        particles.position.x += elapsedSeconds * particleRotationSpeed * particleRotationDirection;
+        particles.position.y -= elapsedSeconds * particleRotationSpeed * particleRotationDirection;
         //particles.rotation.x = elapsedSeconds * particleRotationSpeed * particleRotationDirection;
           
           // We check if the color range has changed, if so, we'll change the colours
@@ -704,9 +704,9 @@ var addOtherPlayer = function(data){
     var cube_material = new THREE.MeshBasicMaterial({color: Coolors.getHex(), wireframe: false});
     var otherPlayer = new THREE.Mesh(cube_geometry, cube_material);
 
-    otherPlayer.position.x = data.x;
+    otherPlayer.position.x = data.x + Math.random()*7;
     otherPlayer.position.y = data.y;
-    otherPlayer.position.z = data.z;
+    otherPlayer.position.z = data.z + Math.random()*6;
 
     otherPlayersId.push( data.playerId );
     otherPlayers.push( otherPlayer );
