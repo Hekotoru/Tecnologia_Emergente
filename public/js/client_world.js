@@ -18,6 +18,7 @@ var reticle;
 var uniforms;
 var Wea,p;
 var clock;
+var floor;
 var effectController  = {
                     turbidity: 10,
                     reileigh: 2,
@@ -35,6 +36,11 @@ var particleRotationSpeed = 0.02;
 var particleRotationDeg = 0;
 var lastColorRange = [0, 0.3];
 var currentColorRange = [0, 0.3];
+
+
+var listener; 
+var audioLoader;
+var sound;
 
 var particleTexture;
 var spriteMaterial;
@@ -71,7 +77,7 @@ var loadWorld = function(){
         var floortexture = floortextureLoader.load( '../img/Floor.png' );  
         var floor_geometry = new THREE.PlaneGeometry( 30, 30);
         var floor_material = new THREE.MeshBasicMaterial( {map:floortexture} );
-        var floor = new THREE.Mesh( floor_geometry, floor_material );
+        floor = new THREE.Mesh( floor_geometry, floor_material );
         floor.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
         scene.add(floor);
         
@@ -138,6 +144,8 @@ var loadWorld = function(){
         scene.add(camera);
 
         Particulas("Clouds");
+
+        
         // Create a VR manager helper to enter and exit VR mode.
         //manager = new WebVRManager(renderer, effect);  
         //alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
@@ -165,8 +173,8 @@ var loadWorld = function(){
                             GetTime(52.3555, -0.1);
                             Wea = SunCalc.getTimes(new Date(), 51.5, -0.1);
                             p = SunCalc.getPosition(Wea.sunrise, 51.5, -0.1);
-                            console.log(Wea);
-                            console.log(new Date());
+                           // console.log(Wea);
+                          //  console.log(new Date());
                             //console.log(p);
                             guiChanged(p.azimuth);
                         });
@@ -216,7 +224,7 @@ var loadWorld = function(){
                              success: function(Response){
 
                                 //guiChanged(Response.time);
-                                console.log(Response.weather[0].main);
+                               // console.log(Response.weather[0].main);
                                 Particulas(Response.weather[0].main);
                              }
                             });
@@ -282,6 +290,28 @@ var loadWorld = function(){
                 fontmesh.rotation.y = 0;
 
                 scene.add(fontmesh);
+
+            }
+
+
+            function InitAudio(name){
+
+
+                if(sound!=undefined){
+                  sound.stop();  
+                }
+
+                listener = new THREE.AudioListener();
+                audioLoader = new THREE.AudioLoader();
+                sound = new THREE.PositionalAudio( listener );
+
+                scene.add(sound);
+
+                audioLoader.load( 'audio/'+ name +'.mp3', function( buffer ) {
+                    sound.setBuffer( buffer );
+                    sound.setRefDistance( 20 );
+                    sound.play();
+                });    
 
             }
 
@@ -469,17 +499,18 @@ var loadWorld = function(){
     }
 
     socket.on('LookingCube',function(Weather){
-        console.log(Weather);
+        //console.log(Weather);
         //GetTime(Weather.Latitude,Weather.Longitud);
         Wea = SunCalc.getTimes(new Date(), Weather.Latitude,Weather.Longitud);
         p = SunCalc.getPosition(Wea.sunrise, Weather.Latitude,Weather.Longitud);
-        console.log(p.azimuth);
+       // console.log(p.azimuth);
         GetTime(Weather.Latitude,Weather.Longitud);
         guiChanged(p.azimuth);
         FontLoaders = new THREE.FontLoader();
                     FontLoaders.load('../fonts/helvetiker_regular.typeface.js', function (font) {
-                    console.log(font);
+                   // console.log(font);
                     InitFont(font,Weather.name);
+                    InitAudio(Weather.name)
                     RequestTimeZone(font,Weather.Latitude,Weather.Longitud);
                 });
         RequestOpenWeather(Weather.Latitude,Weather.Longitud);
@@ -510,7 +541,7 @@ function GetTime(latitude, longitude)
                              success: function(Response){
 
                                 //guiChanged(Response.time);
-                                console.log(Response);
+                               // console.log(Response);
                                 effectController.luminance =SunCalculation(Response);
                                 ///console.log(effectController.luminance);
                                 
@@ -547,7 +578,7 @@ function guiChanged(value) {
 var createPlayer = function(data){
 
     var Coolors = new THREE.Color();
-    console.log(data);
+   // console.log(data);
     Coolors.setRGB(data.colorr,data.colorg,data.colorb);
     playerData = data;
     var cube_geometry = new THREE.BoxGeometry(data.sizeX, data.sizeY, data.sizeZ);
@@ -698,7 +729,7 @@ var checkKeyStates = function(){
 
 var addOtherPlayer = function(data){
     var Coolors = new THREE.Color();
-    console.log(data);
+   // console.log(data);
     Coolors.setRGB(data.colorr,data.colorg,data.colorb);
     var cube_geometry = new THREE.BoxGeometry(data.sizeX, data.sizeY, data.sizeZ);
     var cube_material = new THREE.MeshBasicMaterial({color: Coolors.getHex(), wireframe: false});
