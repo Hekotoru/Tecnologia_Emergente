@@ -30,9 +30,9 @@ var effectController  = {
                     sun: ! true
                 };
 var particles;
-var totalParticles = 200;
-var maxParticleSize = 200;
-var particleRotationSpeed = 0.02;
+var totalParticles;
+var maxParticleSize ;
+var particleRotationSpeed = 0.1;
 var particleRotationDeg = 0;
 var lastColorRange = [0, 0.3];
 var currentColorRange = [0, 0.3];
@@ -44,7 +44,7 @@ var sound;
 
 var particleTexture;
 var spriteMaterial;
-var WeatherDic = [{name:"Clouds",color:0xA9A9A9},{name:"Clear",color:0xFF8C00},{name:"Rain",color:0x008B8B},{name:"Snow",color:0xFFFAFA}]
+var WeatherDic = [{name:"Clouds",color:0x92AcA6},{name:"Clear",color:0xFFFFcc},{name:"Rain",color:0x99CCFF},{name:"Snow",color:0xFFFFFF}]
 
 var loadWorld = function(){
 
@@ -143,12 +143,7 @@ var loadWorld = function(){
         effect.setSize(window.innerWidth, window.innerHeight);
         scene.add(camera);
 
-        Particulas("Clouds");
 
-        
-        // Create a VR manager helper to enter and exit VR mode.
-        //manager = new WebVRManager(renderer, effect);  
-        //alert("MOVE CAMERA:\n\nZoom: Y\nZoom Out: L\nTurn Right: J\nTurn Left: G");
     }
 
 
@@ -187,31 +182,51 @@ var loadWorld = function(){
             RecticleEvento(Cube5);
             RecticleEvento(Cube6);
 
-            function Particulas(colores){
-                scene.remove(particles);
-                particles = new THREE.Object3D();
-                var valorColor;
-                //console.log(colores);
-                for(var i=0; i< WeatherDic.length ; i++){
-                    if(WeatherDic[i].name == colores)
-                    {
-                        valorColor = WeatherDic[i].color;
-                        //console.log(valorColor);
+            function Particulas(name){
+                    scene.remove(particles);
+                    particles = new THREE.Object3D();
+                    var valorColor;
+                    //console.log(colores);
+                    for(var i=0; i< WeatherDic.length ; i++){
+                        if(WeatherDic[i].name == name)
+                        {
+                            valorColor = WeatherDic[i].color;
+                            //console.log(valorColor);
+                        }
                     }
-                }
-                particleTexture = new THREE.ImageUtils.loadTexture('../img/particle.png'),
-                spriteMaterial = new THREE.SpriteMaterial({
-                map: particleTexture,
-                color: valorColor
+                    particleTexture = new THREE.ImageUtils.loadTexture('../img/'+name+'.png'),
+                    spriteMaterial = new THREE.SpriteMaterial({
+                    map: particleTexture,
+                    color: valorColor
                 });
 
+
+                switch(name){
+                case 'Clouds':
+                    maxParticleSize=500;
+                    totalParticles=200;
+                    break;
+                case 'Rain':
+                    maxParticleSize=300;
+                    totalParticles=300;
+                    break;
+                case 'Clear':
+                    maxParticleSize=50;
+                    totalParticles=150
+                    break;
+                case 'Snow':
+                    maxParticleSize=2;
+                    totalParticles=50;
+                    break;
+                }
+
                 for (var i = 0; i < totalParticles; i++) {
-                var sprite = new THREE.Sprite(spriteMaterial);
-                sprite.scale.set(64, 64, 1.0);
-                sprite.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.75);
-                sprite.position.setLength(maxParticleSize * Math.random());
-                sprite.material.blending = THREE.AdditiveBlending;
-                particles.add(sprite);
+                    var sprite = new THREE.Sprite(spriteMaterial);
+                    sprite.scale.set(64, 64, 1.0);
+                    sprite.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.75);
+                    sprite.position.setLength(maxParticleSize * Math.random());
+                    sprite.material.blending = THREE.AdditiveBlending;
+                    particles.add(sprite);
                 }
                 particles.position.y = 70;
                 scene.add(particles);
@@ -226,6 +241,9 @@ var loadWorld = function(){
                                 //guiChanged(Response.time);
                                // console.log(Response.weather[0].main);
                                 Particulas(Response.weather[0].main);
+
+
+                                console.log("Particulas: "+Response.weather[0].main);
                              }
                             });
             }
@@ -384,18 +402,24 @@ var loadWorld = function(){
         Cube5.rotation.y += 0.03;
         Cube6.rotation.y += 0.03;
         
-        var elapsedSeconds = clock.getElapsedTime(),
-        particleRotationDirection = particleRotationDeg <= 180 ? -1 : 1;
-        particles.position.y -= elapsedSeconds * particleRotationSpeed * particleRotationDirection;
-        //particles.rotation.x = elapsedSeconds * particleRotationSpeed * particleRotationDirection;
+
+
+        if(particles!=undefined){
+
+            particles.position.y -= particleRotationSpeed;
+        
           
           // We check if the color range has changed, if so, we'll change the colours
           if (lastColorRange[0] != currentColorRange[0] && lastColorRange[1] != currentColorRange[1]) {
             for (var i = 0; i < totalParticles; i++) {
-                particles.children[i].material.color.setHSL(currentColorRange[0], currentColorRange[1], (Math.random() * (0.7 - 0.2) + 0.2));
+                particles.children[i].material.color.setHSL(currentColorRange[0], currentColorRange[1], (Math.random() * (0.07 - 0.02) + 0.02));
             }
             lastColorRange = currentColorRange;
         // Render the scene through the manager.
+
+        }
+
+  
     }
         requestAnimationFrame( animate );
         render();
