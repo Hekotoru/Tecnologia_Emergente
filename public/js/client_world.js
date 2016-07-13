@@ -165,7 +165,7 @@ var loadWorld = function(){
                 /// GUI
                 $('document').ready(function(){
 
-                            GetTime(52.3555, -0.1);
+                            //GetTime(52.3555, -0.1);
                             Wea = SunCalc.getTimes(new Date(), 51.5, -0.1);
                             p = SunCalc.getPosition(Wea.sunrise, 51.5, -0.1);
                            // console.log(Wea);
@@ -212,7 +212,7 @@ var loadWorld = function(){
                     break;
                 case 'Clear':
                     maxParticleSize=50;
-                    totalParticles=150
+                    totalParticles=100;
                     break;
                 case 'Snow':
                     maxParticleSize=2;
@@ -267,9 +267,6 @@ var loadWorld = function(){
                                     pru-=24;
 
                                 textofinal = pru + ':' + minn.substr(-2) + ':'+ see.substr(-2);
-                               // console.log(textofinal);
-                                //effectController.luminance =SunCalculation(Response);
-                                ///console.log(effectController.luminance);
                                 fonttime = new THREE.TextGeometry(textofinal,{
                                     font: font,
                                     size: 0.5,
@@ -281,6 +278,8 @@ var loadWorld = function(){
                                 fonttimemesh.position.x = 0;
                                 fonttimemesh.rotation.y = 0;
                                 scene.add(fonttimemesh);
+                                GetTime(pru);
+                                guiChanged();
                                 
                              }
                             });
@@ -290,8 +289,6 @@ var loadWorld = function(){
             function InitFont(font,name)
             {
                 scene.remove(fontmesh);
-               // console.log(textofinal);
-                
                 Texto = new THREE.TextGeometry( name, {
 
                     font: font,
@@ -523,13 +520,9 @@ var loadWorld = function(){
     }
 
     socket.on('LookingCube',function(Weather){
-        //console.log(Weather);
-        //GetTime(Weather.Latitude,Weather.Longitud);
+
         Wea = SunCalc.getTimes(new Date(), Weather.Latitude,Weather.Longitud);
         p = SunCalc.getPosition(Wea.sunrise, Weather.Latitude,Weather.Longitud);
-       // console.log(p.azimuth);
-        GetTime(Weather.Latitude,Weather.Longitud);
-        guiChanged(p.azimuth);
         FontLoaders = new THREE.FontLoader();
                     FontLoaders.load('../fonts/helvetiker_regular.typeface.js', function (font) {
                    // console.log(font);
@@ -538,7 +531,7 @@ var loadWorld = function(){
                     RequestTimeZone(font,Weather.Latitude,Weather.Longitud);
                 });
         RequestOpenWeather(Weather.Latitude,Weather.Longitud);
-        //Particulas();
+
 
 
     });
@@ -548,17 +541,20 @@ var loadWorld = function(){
     
 function SunCalculation(SunApi)
     {
-        if(SunApi.sunrise < SunApi.time && SunApi.time < SunApi.sunset)
+        if(SunApi < 18 && SunApi > 6)
         {
-            return Math.floor(Math.random() * 1) + 0.1;  
+            return Math.floor(Math.random() * (1-0.1+ 1)) + 0.1;  
             //console.log(SunApi.sunrise * SunApi.time);
         }
         return  0;  
         
     }
 
-function GetTime(latitude, longitude)
+function GetTime(Hour)
                         {
+                            effectController.luminance =SunCalculation(Hour);
+                            console.log(effectController.luminance);
+                            /*
                             $.ajax({
                              url: 'http://api.geonames.org/timezoneJSON',
                              data: {lat: latitude, lng: longitude, username: 'demo'},
@@ -570,14 +566,14 @@ function GetTime(latitude, longitude)
                                 ///console.log(effectController.luminance);
                                 
                              }
-                            });
+                            });*/
                         }
 function guiChanged(value) {
                     //console.log(sky);
                     /*
                     var d = new Date(value)
                     var f = new Date();*/
-
+                    console.log(effectController.luminance);
                     uniforms = sky.uniforms;
                     uniforms.turbidity.value = effectController.turbidity;
                     uniforms.reileigh.value = effectController.reileigh;
@@ -586,7 +582,7 @@ function guiChanged(value) {
                     uniforms.mieDirectionalG.value = effectController.mieDirectionalG;
 
                     var theta = Math.PI * ( effectController.inclination - 0.5 );
-                    var phi = 2 * Math.PI * ( value - 0.5 );
+                    var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
 
                     sunSphere.position.x = distance * Math.cos( phi );
                     sunSphere.position.y = distance * Math.sin( phi ) * Math.sin( theta );
