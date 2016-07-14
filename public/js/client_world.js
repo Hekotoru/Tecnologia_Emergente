@@ -44,7 +44,7 @@ var sound;
 
 var particleTexture;
 var spriteMaterial;
-var WeatherDic = [{name:"Clouds",color:0x92AcA6},{name:"Clear",color:0xFFFFcc},{name:"Rain",color:0x99CCFF},{name:"Snow",color:0xFFFFFF}]
+var WeatherDic = [{name:"Clouds",color:0x92AcA6},{name:"ThunderStorm",color:003333},{name:"Rain",color:0x336699},{name:"Snow",color:0xFFFFFF}]
 
 var loadWorld = function(){
 
@@ -194,6 +194,7 @@ var loadWorld = function(){
                             //console.log(valorColor);
                         }
                     }
+
                     particleTexture = new THREE.ImageUtils.loadTexture('../img/'+name+'.png'),
                     spriteMaterial = new THREE.SpriteMaterial({
                     map: particleTexture,
@@ -204,20 +205,27 @@ var loadWorld = function(){
                 switch(name){
                 case 'Clouds':
                     maxParticleSize=500;
-                    totalParticles=200;
+                    totalParticles=150;
                     break;
                 case 'Rain':
-                    maxParticleSize=300;
-                    totalParticles=300;
-                    break;
-                case 'Clear':
                     maxParticleSize=50;
-                    totalParticles=100;
+                    totalParticles=20;
                     break;
                 case 'Snow':
-                    maxParticleSize=2;
-                    totalParticles=50;
+                    maxParticleSize=50;
+                    totalParticles=15;
                     break;
+
+                case 'Mist':
+                    maxParticleSize=60;
+                    totalParticles=10;
+                    break;
+
+                case 'ThunderStorm':
+                    maxParticleSize=60;
+                    totalParticles=20;
+                    break;
+
                 }
 
                 for (var i = 0; i < totalParticles; i++) {
@@ -240,6 +248,8 @@ var loadWorld = function(){
 
                                 //guiChanged(Response.time);
                                // console.log(Response.weather[0].main);
+
+                               if(Response.weather[0].main!='Clear')
                                 Particulas(Response.weather[0].main);
 
 
@@ -272,7 +282,7 @@ var loadWorld = function(){
                                     size: 0.5,
                                     height: 0.05,
                                 });
-                                fonttimemesh = new THREE.Mesh(fonttime,new THREE.MeshBasicMaterial({color: 'lightsteelblue', opacity: 0}));
+                                fonttimemesh = new THREE.Mesh(fonttime,new THREE.MeshBasicMaterial({color: 'blue', opacity: 0}));
                                 fonttimemesh.position.y = 5;
                                 fonttimemesh.position.z = -5;
                                 fonttimemesh.position.x = 0;
@@ -297,7 +307,7 @@ var loadWorld = function(){
 
                 });
                 
-                fontmesh = new THREE.Mesh(Texto,new THREE.MeshBasicMaterial({color: 'lightsteelblue', opacity: 0}));
+                fontmesh = new THREE.Mesh(Texto,new THREE.MeshBasicMaterial({color: 'blue', opacity: 0}));
                 
                 fontmesh.position.y = 6;
                 fontmesh.position.z = -5;
