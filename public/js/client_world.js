@@ -36,6 +36,7 @@ var particleRotationSpeed = 0.1;
 var particleRotationDeg = 0;
 var lastColorRange = [0, 0.3];
 var currentColorRange = [0, 0.3];
+var lastCubeToSee;
 
 
 var listener; 
@@ -44,7 +45,7 @@ var sound;
 
 var particleTexture;
 var spriteMaterial;
-var WeatherDic = [{name:"Clouds",color:0x92AcA6},{name:"ThunderStorm",color:003333},{name:"Rain",color:0x336699},{name:"Snow",color:0xFFFFFF}]
+var WeatherDic = [{name:"Clouds",color:0x92AcA6},{name:"ThunderStorm",color:003333},{name:"Rain",color:0x336699},{name:"Snow",color:0xFFFFFF},{name:"Haze",color:0x99FFFF}]
 
 var loadWorld = function(){
 
@@ -95,6 +96,8 @@ var loadWorld = function(){
         scene.add(Cube4);
         scene.add(Cube5);
         scene.add(Cube6);
+
+        lastCubeToSee='test';
         ///***********************************************************      
         //Sphere------------------
         var sphere_geometry = new THREE.SphereGeometry(1);
@@ -226,6 +229,11 @@ var loadWorld = function(){
                     totalParticles=20;
                     break;
 
+                case 'Haze':
+                    maxParticleSize=50;
+                    totalParticles=15;
+                    break;
+
                 }
 
                 for (var i = 0; i < totalParticles; i++) {
@@ -344,9 +352,12 @@ var loadWorld = function(){
             {
                 Cubo.ongazelong = function(){
                 //console.log('entre');
-                   // this.material = reticle.get_random_hex_material();
+                  
+                  if (lastCubeToSee!=Cubo.name){
                     socket.emit('LookingCube', Cubo.name);
-                    //animate();
+                    lastCubeToSee=Cubo.name;
+                  }
+                       
 
                 }
                 Cubo.ongazeover = function(){
